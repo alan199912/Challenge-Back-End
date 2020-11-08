@@ -1,6 +1,5 @@
 const Sequelize = require('sequelize');
 const config = require('../config/config');
-const blogsModel = require('./model/blogs.model');
 
 const BlogsModel = require('./model/blogs.model')
 
@@ -14,7 +13,7 @@ const sequelize = new Sequelize(config.mysql.database, config.mysql.user, config
 async function handleCon() {
 
     try {
-        await sequelize.authenticate();
+        await sequelize.sync({ force: false});
         console.log('[CONNECTION]: Connection has been established successfully.');
     } catch (error) {
         console.error('[CONNECTION]: Unable to connect to the database:', error);
@@ -27,72 +26,60 @@ handleCon();
 // model of table
 const Blog = BlogsModel(sequelize, Sequelize);
 
-// Sync the table
-(async () => {
-    await sequelize.sync({ force: true });
-    console.log('[SYNC]: Tables sync')
-})(); 
-
 // functions to CRUD
-
 async function list() {
-    try {
-        return await Blog.findAll({
-            attributes: ['title','image','category','date']
-        });
-    } catch (error) {
-        return console.log('[ERROR]: No se pudo listar los blogs');
-    }
+
+    return await Blog.findAll({
+        attributes: ['id','title', 'image', 'category', 'date']
+    });
+
 }
 
-async function get(id) {
-    try {
-        return await Blog.findAll({
-            where: {
-                id: id
-            }
-        });
-    } catch (error) {
-        return console.log('[ERROR]: No se encontro un blog con esas caracteristicas');
-    }
+async function get(_id) {
+
+    return await Blog.findOne({
+        where: {
+            id: parseInt(_id)
+        }
+    })
+    
+
 }
 
 async function post(data) {
-    try {
-        return await Blog.create({
-            title: data.title,
-            content: data.content,
-            image: data.image,
-            category: data.category,
-            date: data.date
-        });
-    } catch (error) {
-        return console.log('[ERROR]: Datos invalidos');
-    }
+
+    return await Blog.create({
+        title: data.title,
+        content: data.content,
+        image: data.image,
+        category: data.category,
+        date: data.date
+    });
+
 }
 
-async function update(data, id) {
-    try {
-        return await Blog.update(data, {
-            where: {
-                id: id
-            }
-        })
-    } catch (error) {
-        return console.log('[ERROR]: No se puede editar');
-    }
+async function update(data, _id) {
+
+    return await Blog.update({
+        title: data.title,
+        content: data.content,
+        image: data.image,
+        category: data.category,
+        date: data.date, 
+    }, {
+        where: {
+            id: _id
+        }
+    })
 }
 
-async function remove(id) {
-    try {
-        return await Blog.destroy({
-            where: {
-                id: id
-            }
-        })
-    } catch (error) {
-        
-    }
+async function remove(_id) {
+
+    return await Blog.destroy({
+        where: {
+            id: _id
+        }
+    })
 }
 
 module.exports = {

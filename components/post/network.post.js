@@ -1,5 +1,4 @@
 const express = require('express');
-
 const response = require('../../network/response.network');
 const Controller = require('./index.post');
 
@@ -16,50 +15,64 @@ router.delete('/:id', remove);
 function list(req, res, next) {
     Controller.list()
         .then( (lista) => {
-            response.success(req, res, lista, 200);
+            return response.success(req, res, lista, 200);
         })
         .catch( (e) => {
-            response.error(req, res, e, 500);
+            return response.error(req, res, e, 500);
         });
 }
 
-async function get(req, res, next) {
-    Controller.get(req.params.id)
-        .then( (lista) => {
-            response.success(req, res, lista, 200);
+function get(req, res, next) {
+
+        Controller.get(req.params.id)
+        .then( (blog) => {
+            if(blog == null ) {
+                throw Error 
+            } else {
+                return response.success(req, res, blog, 200);
+            }
         })
-        .catch( (e) => {
-            response.error(req, res, 'Error en la busqueda', 400);
+        .catch((e) => {
+            return response.error(req, res, 'No se pudo encontrar el blog', 500, '[ERROR]: id valor nulo');
         });
 }
 
 function post(req, res) {
     Controller.post(req.body)
         .then( (lista) => {
-            response.success(req, res, lista, 201);
+            return response.success(req, res, 'Blog creado', 201);
         })
         .catch( (e) => {
-            response.error(req, res, 'Error en los datos', 400);
+            return response.error(req, res, 'Error en los datos', 500, '[ERROR]: Datos invalidos');
         });
 }
 
 function update(req, res, next) {
     Controller.update(req.body ,req.params.id)
-        .then( (lista) => {
-            response.success(req, res, 'Elemento editado correctamente', 200);
+        .then( (blog) => {
+            if(blog == 0) {
+                throw Error
+            } else {
+                return response.success(req, res, 'Se edito correctamente', 200);
+            }
         })
         .catch((e) => {
-            response.error(req, res, 'Datos invalidos', 400);
+            return response.error(req, res, 'Datos invalidos', 500, '[ERROR]: Datos invalidos');
         });
 }
 
 function remove(req, res) {
+    
     Controller.remove(req.params.id)
-        .then( (lista) => {
-            response.success(req, res, 'Blog eliminado correctamente', 200);
+        .then( (blog) => {
+            if(blog == 0) {
+                throw Error
+            } else {
+                return response.success(req, res, 'Se elimino correctamente', 200);
+            }
         })
         .catch((e) => {
-            response.error(req, res, 'Error al eliminar', 400);
+            return response.error(req, res, 'Error al eliminar', 500, '[ERROR]: NO SE PUEDE ELIMINAR');
         });
 }
 

@@ -1,5 +1,3 @@
-const TABLA = 'post';
-
 module.exports = (injectedStore) => {
     let store = injectedStore;
 
@@ -12,8 +10,8 @@ module.exports = (injectedStore) => {
     }
 
     function get(id) {
-        return store.get(id);
-    }
+        return store.get(id)
+    }   
 
     function post(data) {
         return store.post(data);
